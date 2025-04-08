@@ -338,15 +338,27 @@ class Travle:
                     print(f"{' '*alt}-> {self.get_country_name(neighbor)}")
         return dist
     
-    def dfs(self, start_country: int, visited: list[bool], result: list[int], layer: int):
+    def dfs(self, start_country: int, visited: list[bool], result: list[int], layer: int, parent_ind: list[int]):
         visited[start_country] = True
         result.append(start_country)
-        print(self.get_country_name(start_country))
-        for neighbor in self.country_code_neighbors_dict.get(start_country, []):
+        neighbors = self.country_code_neighbors_dict.get(start_country, [])
+        parent_ind.append(layer)
+        last_neighbor = neighbors[-1]
+        for i, neighbor in enumerate(neighbors):
+            if visited[last_neighbor]:
+                not_visited = [n for n in neighbors if not visited[n]]
+                last_neighbor = not_visited[-1] if len(not_visited) > 0 else last_neighbor
             if not visited[neighbor]:
-                tabs = "-"*layer
-                print(f"{tabs}-> {self.get_country_name(neighbor)}")
-                self.dfs(neighbor, visited, result, layer+1)
+                if neighbor == last_neighbor:
+                    parent_ind.remove(layer)
+                    parent_down = "└"
+                else:
+                    parent_down = "├"
+                tabs = " " * layer
+                print(f"{''.join(tabs)}{parent_down}─> {self.get_country_name(neighbor)}")
+                self.dfs(neighbor, visited, result, layer+1, parent_ind.copy())
+
+            
 
     def get_country_name(self, code: int):
         return self.country_code_to_name.get(code, "Not Found")
@@ -401,6 +413,7 @@ class Travle:
             all_reachable_sorted = sorted(all_reachable, key=lambda x: x[1])
             print(f"{str(len(all_reachable))} countries reacheable from {start_country}\n")
             print('\n'.join([f'{x[0]}: crossing {str(x[1]-1)} countries' for x in all_reachable_sorted]))
-            self.dfs(start, [False]*self.list_size, [], 0)
+            print(start_country)
+            self.dfs(start, [False]*self.list_size, [], 0, [])
         print()
 
