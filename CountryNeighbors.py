@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import os.path as op
 
-class Travle:
+class CountryNeighbors:
     filename_code_to_name = "country_code_to_name"
     filename_name_to_code = "country_name_to_code"
     filename_country_neighbors_dict = "country_code_neighbors_dict"
